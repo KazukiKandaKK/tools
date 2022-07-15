@@ -3,7 +3,8 @@ name: Pylint
 on:
   push:
     branches:
-      - feature/githubact
+      - develop
+      - 'feature/**'
 jobs:
   build:
     runs-on: ubuntu-latest
