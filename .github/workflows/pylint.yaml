@@ -23,7 +23,7 @@ jobs:
           pip install torchvision
           pip install tqdm
           pip install matplotlib
-          pip install tqdm
+          pip install torch
 
       - name: Analysing the code with pylint
         run: |
