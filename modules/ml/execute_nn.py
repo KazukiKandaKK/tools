@@ -9,7 +9,7 @@ from tqdm import tqdm
 from torch_net import Net
 
 
-class Execute:
+class Execute:  # pylint: disable=R0902
     '''
     Execute Deep Neural Network
     '''
@@ -31,7 +31,8 @@ class Execute:
         self.trainloader = th.utils.data.DataLoader(
             self.trainset, batch_size=100, shuffle=True, num_workers=2)
         self.testset = torchvision.datasets.MNIST(
-            root='~/Documents/work/MNISTDataset/data', train=False, download=True, transform=self.trans)
+            root='~/Documents/work/MNISTDataset/data',
+            train=False, download=True, transform=self.trans)
         self.testloader = th.utils.data.DataLoader(
             self.testset, batch_size=100, shuffle=True, num_workers=2)
 
@@ -79,7 +80,7 @@ class Execute:
                 sum_correct += (predicted == labels).sum().item()
             # lossとaccuracy出力
             print(
-                f"train mean loss={sum_loss*self.BATCH_SIZE/len(self.trainloader.dataset)}, accuracy={float(sum_correct/sum_total)}")
+                f"train mean loss={sum_loss*self.BATCH_SIZE/len(self.trainloader.dataset)},accuracy={float(sum_correct/sum_total)}")  # pylint: disable=C0301
             # traindataのlossをグラフ描画のためにlistに保持
             self.train_loss_value.append(
                 sum_loss*self.BATCH_SIZE/len(self.trainloader.dataset))
@@ -101,7 +102,7 @@ class Execute:
                 sum_total += labels.size(0)
                 sum_correct += (predicted == labels).sum().item()
             print(
-                f"test  mean loss={sum_loss*self.BATCH_SIZE/len(self.testloader.dataset)}, accuracy={float(sum_correct/sum_total)}")
+                f"test  mean loss={sum_loss*self.BATCH_SIZE/len(self.testloader.dataset)}, accuracy={float(sum_correct/sum_total)}")  # pylint: disable=C0301
             self.test_loss_value.append(
                 sum_loss*self.BATCH_SIZE/len(self.testloader.dataset))
             self.test_acc_value.append(float(sum_correct/sum_total))
