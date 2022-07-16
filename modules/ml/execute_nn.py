@@ -1,14 +1,18 @@
 """Create a Mnist of torch"""
 import torch as th
-import torchvision
-import torch.optim as optim
-from torch_net import Net
-from tqdm import tqdm
-import matplotlib.pyplot as plt
 import torch.nn as nn
+import torch.optim as optim
+import torchvision
+import matplotlib.pyplot as plt
+
+from tqdm import tqdm
+from torch_net import Net
 
 
 class Execute:
+    '''
+    Execute Deep Neural Network
+    '''
     # Define
     BATCH_SIZE = 100
     WEIGHT_DECAY = 0.005
@@ -26,27 +30,27 @@ class Execute:
             root='path', train=True, download=True, transform=self.trans)
         self.trainloader = th.utils.data.DataLoader(
             self.trainset, batch_size=100, shuffle=True, num_workers=2)
-        for data, label in self.trainloader:
-            break
         self.testset = torchvision.datasets.MNIST(
             root='~/Documents/work/MNISTDataset/data', train=False, download=True, transform=self.trans)
         self.testloader = th.utils.data.DataLoader(
             self.testset, batch_size=100, shuffle=True, num_workers=2)
 
-        self.device = th.device("cuda:0")
+        self.device = 'cuda' if th.cuda.is_available() else 'cpu'
         self.net = Net()
         self.net = self.net.to(self.device)
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = optim.SGD(self.net.parameters(), lr=0.0001,
                                    momentum=0.9, weight_decay=0.005)
-
-    def execute(self):
-
         # Variable
         self.train_loss_value = []  # trainingのlossを保持するlist
         self.train_acc_value = []  # trainingのaccuracyを保持するlist
         self.test_loss_value = []  # testのlossを保持するlist
         self.test_acc_value = []  # testのaccuracyを保持するlist
+
+    def execute(self):
+        '''
+        execute to calculate of neural network
+        '''
 
         # Learning
         for epoch in tqdm(range(self.EPOCH)):
@@ -72,10 +76,10 @@ class Execute:
                 sum_loss += loss.item()  # lossを足していく
                 _, predicted = outputs.max(1)  # 出力の最大値の添字(予想位置)を取得
                 sum_total += labels.size(0)  # labelの数を足していくことでデータの総和を取る
-                # 予想位置と実際の正解を比べ,正解している数だけ足す
                 sum_correct += (predicted == labels).sum().item()
-            print("train mean loss={}, accuracy={}"
-                  .format(sum_loss*self.BATCH_SIZE/len(self.trainloader.dataset), float(sum_correct/sum_total)))  # lossとaccuracy出力
+            # lossとaccuracy出力
+            print(
+                f"train mean loss={sum_loss*self.BATCH_SIZE/len(self.trainloader.dataset)}, accuracy={float(sum_correct/sum_total)}")
             # traindataのlossをグラフ描画のためにlistに保持
             self.train_loss_value.append(
                 sum_loss*self.BATCH_SIZE/len(self.trainloader.dataset))
@@ -96,13 +100,16 @@ class Execute:
                 _, predicted = outputs.max(1)
                 sum_total += labels.size(0)
                 sum_correct += (predicted == labels).sum().item()
-            print("test  mean loss={}, accuracy={}"
-                  .format(sum_loss*self.BATCH_SIZE/len(self.testloader.dataset), float(sum_correct/sum_total)))
+            print(
+                f"test  mean loss={sum_loss*self.BATCH_SIZE/len(self.testloader.dataset)}, accuracy={float(sum_correct/sum_total)}")
             self.test_loss_value.append(
                 sum_loss*self.BATCH_SIZE/len(self.testloader.dataset))
             self.test_acc_value.append(float(sum_correct/sum_total))
 
     def print_result(self):
+        '''
+        print result
+        '''
         plt.figure(figsize=(6, 6))  # グラフ描画用
 
         # 以下グラフ描画

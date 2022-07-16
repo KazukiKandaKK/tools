@@ -3,6 +3,10 @@ import torch.nn as nn
 
 
 class Net(nn.Module):
+    '''
+    Create a Neural Network
+    '''
+
     def __init__(self):
         super(Net, self).__init__()
         self.relu = nn.ReLU()
@@ -16,7 +20,10 @@ class Net(nn.Module):
         self.fc1 = nn.Linear(32 * 5 * 5, 120)
         self.fc2 = nn.Linear(120, 10)
 
-    def forward(self, x):
+    def forward(self, x):  # pylint: disable=C0103
+        '''
+        Create a Forward Logic
+        '''
         x = self.conv1(x)
         x = self.relu(x)
         x = self.pool(x)
