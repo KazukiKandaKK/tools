@@ -20,12 +20,12 @@ class Execute:  # pylint: disable=R0902
     EPOCH = 10
 
     def __init__(self) -> None:
-        # Tensor形式のオブジェクトを準備
+        # Prepare
         self.trans = torchvision.transforms.ToTensor()
-        # 正規化を行うための準備
+        # Normalize
         self.trans = torchvision.transforms.Compose(
             [torchvision.transforms.ToTensor(), torchvision.transforms.Normalize((0.5,), (0.5,))])
-        # MNISTのデータセットを取得
+        # Get MNIST
         self.trainset = torchvision.datasets.MNIST(
             root='path', train=True, download=True, transform=self.trans)
         self.trainloader = th.utils.data.DataLoader(
@@ -43,10 +43,10 @@ class Execute:  # pylint: disable=R0902
         self.optimizer = optim.SGD(self.net.parameters(), lr=0.0001,
                                    momentum=0.9, weight_decay=0.005)
         # Variable
-        self.train_loss_value = []  # trainingのlossを保持するlist
-        self.train_acc_value = []  # trainingのaccuracyを保持するlist
-        self.test_loss_value = []  # testのlossを保持するlist
-        self.test_acc_value = []  # testのaccuracyを保持するlist
+        self.train_loss_value = []
+        self.train_acc_value = []
+        self.test_loss_value = []
+        self.test_acc_value = []
 
     def execute(self):
         '''
@@ -55,7 +55,7 @@ class Execute:  # pylint: disable=R0902
 
         # Learning
         for epoch in tqdm(range(self.EPOCH)):
-            print('epoch', epoch+1)  # epoch数の出力
+            print('epoch', epoch+1)
             for (inputs, labels) in tqdm(self.trainloader):
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
                 self.optimizer.zero_grad()
@@ -64,34 +64,32 @@ class Execute:  # pylint: disable=R0902
                 loss.backward()
                 self.optimizer.step()
 
-            sum_loss = 0.0  # lossの合計
-            sum_correct = 0  # 正解率の合計
-            sum_total = 0  # dataの数の合計
+            sum_loss = 0.0
+            sum_correct = 0
+            sum_total = 0
 
-            # train dataを使ってテストをする(パラメータ更新がないようになっている)
+            # train
             for (inputs, labels) in tqdm(self.trainloader):
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
                 self.optimizer.zero_grad()
                 outputs = self.net(inputs)
                 loss = self.criterion(outputs, labels)
-                sum_loss += loss.item()  # lossを足していく
-                _, predicted = outputs.max(1)  # 出力の最大値の添字(予想位置)を取得
-                sum_total += labels.size(0)  # labelの数を足していくことでデータの総和を取る
+                sum_loss += loss.item()
+                _, predicted = outputs.max(1)
+                sum_total += labels.size(0)
                 sum_correct += (predicted == labels).sum().item()
-            # lossとaccuracy出力
+            # loss and accuracy
             print(
                 f"train mean loss={sum_loss*self.BATCH_SIZE/len(self.trainloader.dataset)},accuracy={float(sum_correct/sum_total)}")  # pylint: disable=C0301
-            # traindataのlossをグラフ描画のためにlistに保持
             self.train_loss_value.append(
                 sum_loss*self.BATCH_SIZE/len(self.trainloader.dataset))
-            # traindataのaccuracyをグラフ描画のためにlistに保持
             self.train_acc_value.append(float(sum_correct/sum_total))
 
             sum_loss = 0.0
             sum_correct = 0
             sum_total = 0
 
-            # test dataを使ってテストをする
+            # test
             for (inputs, labels) in self.testloader:
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
                 self.optimizer.zero_grad()
@@ -111,9 +109,8 @@ class Execute:  # pylint: disable=R0902
         '''
         print result
         '''
-        plt.figure(figsize=(6, 6))  # グラフ描画用
+        plt.figure(figsize=(6, 6))
 
-        # 以下グラフ描画
         plt.plot(range(self.EPOCH), self.train_loss_value)
         plt.plot(range(self.EPOCH), self.test_loss_value, c='#00ff00')
         plt.xlim(0, self.EPOCH)
