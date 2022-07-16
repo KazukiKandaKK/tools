@@ -9,7 +9,7 @@ from tqdm import tqdm
 try:
     from torch_net import Net
 except ModuleNotFoundError:
-    from .torch_net import Net
+    from .torch_net import Net  # pylint: disable=E0402
 
 
 class Execute:  # pylint: disable=R0902
