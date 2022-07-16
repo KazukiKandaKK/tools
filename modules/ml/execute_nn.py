@@ -9,7 +9,7 @@ from tqdm import tqdm
 from torch_net import Net
 
 
-class Execute:  # pylint: disable=R0902R0402
+class Execute:  # pylint: disable=R0902
     '''
     Execute Deep Neural Network
     '''
