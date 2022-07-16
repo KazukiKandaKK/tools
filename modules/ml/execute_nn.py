@@ -6,7 +6,10 @@ import torchvision
 import matplotlib.pyplot as plt
 
 from tqdm import tqdm
-from torch_net import Net
+try:
+    from torch_net import Net
+except ModuleNotFoundError:
+    from .torch_net import Net
 
 
 class Execute:  # pylint: disable=R0902
