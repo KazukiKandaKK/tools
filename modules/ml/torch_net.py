@@ -1,5 +1,5 @@
 '''Pytorch'''
-import torch.nn as nn
+import torch.nn as nn  # pylint: disable=R0402
 
 
 class Net(nn.Module):  # pylint: disable=R0903

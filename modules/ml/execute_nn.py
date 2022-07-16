@@ -1,7 +1,7 @@
 """Create a Mnist of torch"""
 import torch as th
-import torch.nn as nn
-import torch.optim as optim
+import torch.nn as nn  # pylint: disable=R0402
+import torch.optim as optim  # pylint: disable=R0402
 import torchvision
 import matplotlib.pyplot as plt
 
@@ -9,7 +9,7 @@ from tqdm import tqdm
 from torch_net import Net
 
 
-class Execute:  # pylint: disable=R0902
+class Execute:  # pylint: disable=R0902R0402
     '''
     Execute Deep Neural Network
     '''
