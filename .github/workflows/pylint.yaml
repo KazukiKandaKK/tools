@@ -4,24 +4,30 @@ on:
   push:
     branches:
       - develop
-      - 'feature/**'
+      - "feature/**"
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pylint
-        pip install bandit
-    - name: Analysing the code with pylint
-      run: |
-        pylint $(git ls-files '*.py')
-    - name : Security Check
-      run: |
-        bandit ./*
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint
+          pip install bandit
+          pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
+          pip install torchvision
+          pip install tqdm
+          pip install matplotlib
+          pip install torch
+
+      - name: Analysing the code with pylint
+        run: |
+          pylint $(git ls-files '*.py')
+      - name: Security Check
+        run: |
+          bandit ./modules/**
