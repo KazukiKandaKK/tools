@@ -4,12 +4,15 @@ import torch.nn as nn  # pylint: disable=R0402
 import torch.optim as optim  # pylint: disable=R0402
 import torchvision
 import matplotlib.pyplot as plt
+import mlflow
 
 from tqdm import tqdm
 try:
     from torch_net import Net
 except ModuleNotFoundError:
     from .torch_net import Net  # pylint: disable=E0402
+
+mlflow.pytorch.autolog()
 
 
 class Execute:  # pylint: disable=R0902
@@ -57,56 +60,60 @@ class Execute:  # pylint: disable=R0902
         '''
 
         # Learning
-        for epoch in tqdm(range(self.EPOCH)):
-            print('epoch', epoch+1)
-            for (inputs, labels) in tqdm(self.trainloader):
-                inputs, labels = inputs.to(self.device), labels.to(self.device)
-                self.optimizer.zero_grad()
-                outputs = self.net(inputs)
-                loss = self.criterion(outputs, labels)
-                loss.backward()
-                self.optimizer.step()
+        with mlflow.start_run() as run:
+            for epoch in tqdm(range(self.EPOCH)):
+                print('epoch', epoch+1)
+                for (inputs, labels) in tqdm(self.trainloader):
+                    inputs, labels = inputs.to(
+                        self.device), labels.to(self.device)
+                    self.optimizer.zero_grad()
+                    outputs = self.net(inputs)
+                    loss = self.criterion(outputs, labels)
+                    loss.backward()
+                    self.optimizer.step()
 
-            sum_loss = 0.0
-            sum_correct = 0
-            sum_total = 0
+                sum_loss = 0.0
+                sum_correct = 0
+                sum_total = 0
 
-            # train
-            for (inputs, labels) in tqdm(self.trainloader):
-                inputs, labels = inputs.to(self.device), labels.to(self.device)
-                self.optimizer.zero_grad()
-                outputs = self.net(inputs)
-                loss = self.criterion(outputs, labels)
-                sum_loss += loss.item()
-                _, predicted = outputs.max(1)
-                sum_total += labels.size(0)
-                sum_correct += (predicted == labels).sum().item()
-            # loss and accuracy
-            print(
-                f"train mean loss={sum_loss*self.BATCH_SIZE/len(self.trainloader.dataset)},accuracy={float(sum_correct/sum_total)}")  # pylint: disable=C0301
-            self.train_loss_value.append(
-                sum_loss*self.BATCH_SIZE/len(self.trainloader.dataset))
-            self.train_acc_value.append(float(sum_correct/sum_total))
+                # train
+                for (inputs, labels) in tqdm(self.trainloader):
+                    inputs, labels = inputs.to(
+                        self.device), labels.to(self.device)
+                    self.optimizer.zero_grad()
+                    outputs = self.net(inputs)
+                    loss = self.criterion(outputs, labels)
+                    sum_loss += loss.item()
+                    _, predicted = outputs.max(1)
+                    sum_total += labels.size(0)
+                    sum_correct += (predicted == labels).sum().item()
+                # loss and accuracy
+                print(
+                    f"train mean loss={sum_loss*self.BATCH_SIZE/len(self.trainloader.dataset)},accuracy={float(sum_correct/sum_total)}")  # pylint: disable=C0301
+                self.train_loss_value.append(
+                    sum_loss*self.BATCH_SIZE/len(self.trainloader.dataset))
+                self.train_acc_value.append(float(sum_correct/sum_total))
 
-            sum_loss = 0.0
-            sum_correct = 0
-            sum_total = 0
+                sum_loss = 0.0
+                sum_correct = 0
+                sum_total = 0
 
-            # test
-            for (inputs, labels) in self.testloader:
-                inputs, labels = inputs.to(self.device), labels.to(self.device)
-                self.optimizer.zero_grad()
-                outputs = self.net(inputs)
-                loss = self.criterion(outputs, labels)
-                sum_loss += loss.item()
-                _, predicted = outputs.max(1)
-                sum_total += labels.size(0)
-                sum_correct += (predicted == labels).sum().item()
-            print(
-                f"test  mean loss={sum_loss*self.BATCH_SIZE/len(self.testloader.dataset)}, accuracy={float(sum_correct/sum_total)}")  # pylint: disable=C0301
-            self.test_loss_value.append(
-                sum_loss*self.BATCH_SIZE/len(self.testloader.dataset))
-            self.test_acc_value.append(float(sum_correct/sum_total))
+                # test
+                for (inputs, labels) in self.testloader:
+                    inputs, labels = inputs.to(
+                        self.device), labels.to(self.device)
+                    self.optimizer.zero_grad()
+                    outputs = self.net(inputs)
+                    loss = self.criterion(outputs, labels)
+                    sum_loss += loss.item()
+                    _, predicted = outputs.max(1)
+                    sum_total += labels.size(0)
+                    sum_correct += (predicted == labels).sum().item()
+                print(
+                    f"test  mean loss={sum_loss*self.BATCH_SIZE/len(self.testloader.dataset)}, accuracy={float(sum_correct/sum_total)}")  # pylint: disable=C0301
+                self.test_loss_value.append(
+                    sum_loss*self.BATCH_SIZE/len(self.testloader.dataset))
+                self.test_acc_value.append(float(sum_correct/sum_total))
 
     def print_result(self):
         '''
