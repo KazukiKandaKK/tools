@@ -30,4 +30,4 @@ jobs:
           pylint $(git ls-files '*.py')
       - name: Security Check
         run: |
-          bandit ./modules/*
+          bandit ./modules/**
