@@ -60,7 +60,7 @@ class Execute:  # pylint: disable=R0902
         '''
 
         # Learning
-        with mlflow.start_run() as run:
+        with mlflow.start_run() as run:  # pylint: disable=W0612
             for epoch in tqdm(range(self.EPOCH)):
                 print('epoch', epoch+1)
                 for (inputs, labels) in tqdm(self.trainloader):
