@@ -24,6 +24,7 @@ jobs:
           pip install tqdm
           pip install matplotlib
           pip install torch
+          pip install mlflow
 
       - name: Analysing the code with pylint
         run: |

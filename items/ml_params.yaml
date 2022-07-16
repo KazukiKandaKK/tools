@@ -1,0 +1,5 @@
+nn:
+  batch_size: 100
+  weight_decay: 0.005
+  lerning_late: 0.0001
+  epoch: 10
